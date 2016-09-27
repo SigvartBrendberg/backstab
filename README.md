@@ -1,5 +1,5 @@
 # Backstab
-The Backstab programming language is a small scripting language to automate small algorithms and formulas. Programs are written on the fly, and typically just once. Its compact syntax and stack based nature makes it suitable for golfing.
+The Backstab programming language is a small scripting language to automate small algorithms and formulas. Programs are written and executed on the fly, and typically used just once. Its compact syntax and stack based nature makes it suitable for golfing.
 
 If you are a programmer, I bet your favourite method for doing calculations is through code. That works great, mostly, but what if you just need to perform a small task, like adding some numbers or using a trivial formula? Then it is a little overkill to start typing #include <stdio.h> int main... Sure, that is a great thing if you can reuse it later, but for a thowaway calculation, you need something different.
 That leads us to the first design principle of backstab. The program is ment to run while you are writing it. For every small change you do, for every keystroke, you can imidiately see the effect.
