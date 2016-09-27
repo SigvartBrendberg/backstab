@@ -1,4 +1,4 @@
-backstab = function(code){
+backstab = function(code,input){
 	var subStringProcess = function(string){
 		var modified = "";
 		var subStrings = [];
@@ -55,6 +55,9 @@ backstab = function(code){
 		return false;
 	};
 	var stack = [];
+	for(var i=0;i<input.length;i++){
+		stack.push(input[i]);
+	};
 	var last = function(index){
 		return stack[stack.length-index-1];
 	};
