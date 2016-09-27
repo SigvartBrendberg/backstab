@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      table{
+        border-collapse:separate;
+        border-spacing:50px 0;
+      }
+      td{
+        padding:10px 0;
+      }
+      th{
+        text-align:left;
+      }
+      a{
+        color:#B0B0F3;
+      }
+      .about{
+        text-align:left;
+      }
+    </style>
+    <script>
+/**
+ * @licstart  The following is the entire license notice for the 
+ *  JavaScript code in this page.
+ *
+ * Copyright (C) 2016  Sigvart Brendberg
+ *
+ *
+ * The JavaScript code in this page is free software: you can
+ * redistribute it and/or modify it under the terms of the GNU
+ * General Public License (GNU GPL) as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option)
+ * any later version.  The code is distributed WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+ *
+ * As additional permission under GNU GPL version 3 section 7, you
+ * may distribute non-source (e.g., minimized or compacted) forms of
+ * that code without the copy of the GNU GPL normally required by
+ * section 4, provided you include this license notice and a URL
+ * through which recipients can access the Corresponding Source.
+ *
+ * @licend  The above is the entire license notice
+ * for the JavaScript code in this page.
+ */
+    </script>
+    <script src="onlinestabber.js"></script>
+  </head>
+  <body bgcolor="#404050" style="color:#F0F0F3">
+    <center>
+      <h1>Backstab</h1>
+      <i>The language for impatient people. "Do it once, do it kinda right"</i><br>
+      <textarea id="program" rows="10" cols="80"></textarea><br>
+      <i>Powered by stack based suffix notation</i><br>
+      <p><span id="output"></span>&nbsp;</p>
+      <details>
+        <br>
+        <summary>Show syntax</summary>
+        <table>
+          <tr>
+            <th>Token</th>
+            <th>Action</th>
+            <th>Examples</th>
+            <th>Notes</th>
+          </tr>
+          <tr>
+            <td>0-9</td>
+            <td>Literal numbers</td>
+            <td>123 → 1,2,3</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>"</td>
+            <td>Initiate long number mode.<br>Concatenates long numbers</td>
+            <td>"123 → 123<br>1"23 → 1,23<br>"12"34 → 12,34</td>
+            <td>Terminates automatically</td>
+          </tr>
+          <tr>
+            <td>+-*/%^</td>
+            <td>Arithmetic opperators<br>Takes the top two elements of the stack as inputs<br>The result is pushed back to the stack<br>Addition, substraction, multiplication, division, modulo and powers</td>
+            <td>23* → 6<br>52/ → 2.5<br>23+5* → 25</td>
+            <td>Division is floating point</td>
+          </tr>
+          <tr>
+            <td>_</td>
+            <td>Concatenate the top two numbers on the stack</td>
+            <td>23_ → 23</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>$</td>
+            <td>Swap the top two numbers on the stack</td>
+            <td>23$ → 3,2</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>@</td>
+            <td>Rotate the top three numbers of the stack</td>
+            <td>123@ → 3,2,1</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>:</td>
+            <td>Duplicate the number on the top of the stack</td>
+            <td>2: → 2,2</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>RL</td>
+            <td>Right or left shift the stack</td>
+            <td>1234R → 4,1,2,3<br>1234L → 2,3,4,1</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>~</td>
+            <td>Remove the number on top of the stack</td>
+            <td>123~ → 1,2</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>?</td>
+            <td>Shorthand conditional. Pops a value from the stack, and only executes the next statement if it is non-zero</td>
+            <td>1?23 → 2,3<br>0?23 → 3</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>=><</td>
+            <td>Logical operators, pops two number of the stack, and pushes either 0 or 1</td>
+            <td>55= → 1<br>45= → 0<br>34< → 1</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>{}</td>
+            <td>A function block. Code inside the block is executed when the function is called</td>
+            <td></td>
+            <td>A function can contain other functions, but they are only accessible from within it</td>
+          </tr>
+          <tr>
+            <td>\</td>
+            <td>The function caller. Pops a number from the stack, and executes that function</td>
+            <td>{+}220\ → 4<br>7{2*}{-}0\11\ → 13</td>
+            <td>The function indexing inside another function is independent
+              <br>Functions outside the current function can not be called
+            </td>
+          </tr>
+          <tr>
+            <td>(|)</td>
+            <td>if..else statement. The code between ( and | is executed if a number popped from the stack at ( is non-zero, between | and ) otherwise.
+              <br>An if statement can be written as just ()
+            </td>
+            <td>0(1|2) → 2<br>1(1|2) → 1<br>1(2) → 2</td>
+            <td>Tip: for longer programs, use whitespace and intendation</td>
+          </tr>
+          <tr>
+            <td>[]</td>
+            <td>While loop. Each time [ is reached, a number is popped. A non-zero number makes the loop execute anything between [ and ]. Repeat</td>
+            <td>5:[:1-:] → 5,4,3,2,1,0</td>
+            <td>Be careful! Infinite loops are nasty for your browser<br>If a ] does not find a matchin [, it goes to the start of the current function block (or of the program)</td>
+          </tr>
+          <tr>
+            <td>sct<br>SCT</td>
+            <td>Trigonometry. Sine, cosine and tangent. The inverse function if in capital letters</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>pe</td>
+            <td>Push pi or e to the stack</td>
+            <td>p → 3.14159...<br>e → 2.71828...</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>ahkmb</td>
+            <td>Push either ten, hundred, thousand, a million or a billion to the stack</td>
+            <td>5k* → 5000</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>v</td>
+            <td>Square root</td>
+            <td>"49v → 7</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>f</td>
+            <td>Floor. Round a number down to the nearest integer</td>
+            <td>pf → 3</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>i</td>
+            <td>Push the length of the stack to the stack</td>
+            <td>i → 0<br>5i → 51</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>r</td>
+            <td>Reverse the stack</td>
+            <td>123r → 3,2,1</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>l</td>
+            <td>The natural logarithm</td>
+            <td>el → 1</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>!</td>
+            <td>Factorial</td>
+            <td>6! → 720</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>q</td>
+            <td>Sort the stack</td>
+            <td>5496q → 4,5,6,9</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>x</td>
+            <td>Push a random number between 0 and 1 to the stack</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>F</td>
+            <td>Factorize the top number of the stack</td>
+            <td>"140F → 2,2,5,7</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>,</td>
+            <td>Split a number into digits</td>
+            <td>"140, → 1,4,0</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>A</td>
+            <td>Absolute value</td>
+            <td>5-A → 5<br>5A → 5</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>;</td>
+            <td>Stop execution</td>
+            <td></td>
+            <td></td>
+          </tr>
+        </table>
+      </details>
+      <br>
+      <details>
+        <summary>What is this?</summary>
+        <div class="about">
+          <p>If you are a programmer, I bet your favourite method for doing calculations is through code. That works great, mostly, but what if you just need to perform a small task, like adding some numbers or using a trivial formula? Then it is a little overkill to start typing #include &lt;stdio.h> int main... Sure, that is a great thing if you can reuse it later, but for a thowaway calculation, you need something different.</p>
+          <p>That leads us to the first design principle of backstab. The program is ment to run while you are writing it. For every small change you do, for every keystroke, you can imidiately see the effect.</p>
+          <p>That must have some consequeces. Imagine what trouble such a feature would make in other languages: You have typed the opening bracket, but not the closing one yet → SYNTAX ERROR! Or, just a part of a keyword → REFERENCE ERROR!</p>
+          <p>Perhaps the most apparent difference is how you do math. Imagine you are doing something like '2+2'. By the time you have typed '2+', it is not valid, the second number is missing.
+            <br>Backstab solves that problem by using <a href="https://en.wikipedia.org/wiki/Reverse_Polish_notation">Reverse Polish notation</a>, an operator looks back to fetch its arguments. The calculation above becomes '22+', and is at no point an invalid expression. The interpreter reads it as 'push 2, push another 2, add them together'. Another great benefit of this is that no paranthesis or order of operators rules are needed.</p>
+          <p>You can make complex programs in backstab. It is not the main purpose, as big chuncks of backstab code are hard to read, but the possibility of creating function blocks {} makes it surprisingly powerful.</p>
+        </div>
+      </details>
+      <p><i>Online backstab interpreter by Sigvart Brendberg, 2016.</i></p>
+      <p>This is free software, released under the <a href="http://gplv3.fsf.org/">GNU General Public License v3.0</a></p>
+      <script>
+        var program = document.getElementById("program");
+        var output = document.getElementById("output");
+        program.onkeyup = function(){
+	  output.innerHTML = backstab(program.value)
+        };
+      </script>
+    </center>
+  </body>
+</html>
