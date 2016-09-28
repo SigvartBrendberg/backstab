@@ -326,6 +326,34 @@ backstab = function(code,input){
 				};
 			};
 		}
+		else if(string[i] === "#"){
+			var repeat = Math.floor(last(0));//autofloor
+			stack.pop();
+			if(string[++i] === "+"){
+				for(;repeat--;){
+					change(last(1)+last(0),1);
+					stack.pop();
+				};
+			}
+			else if(string[i] === "-"){
+				for(;repeat--;){
+					change(last(1)+last(0),1);
+					stack.pop();
+				};
+			};
+			else if(string[i] === "*"){
+				for(;repeat--;){
+					change(last(1)*last(0),1);
+					stack.pop();
+				};
+			};
+			else if(string[i] === "_"){
+				for(;repeat--;){
+					change(Number(last(1)+""+last(0)),1);
+					stack.pop();
+				};
+			};
+		}
 		else if(string[i] === "["){
 			if(last(0) === 0){
 				var nesting = 1;

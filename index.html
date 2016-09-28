@@ -14,10 +14,20 @@
         text-align:left;
       }
       a{
-        color:#B0B0F3;
+        color:#b0b0f3;
       }
       .about{
         text-align:left;
+      }
+      .code{
+        color:#ff2010;
+        font-family:monospace;
+        font-size:150%;
+      }
+      .token{
+        color:#90a0ff;
+        font-family:monospace;
+        font-size:150%;
       }
     </style>
     <script>
@@ -48,7 +58,7 @@
     </script>
     <script src="onlinestabber.js"></script>
   </head>
-  <body bgcolor="#404050" style="color:#F0F0F3">
+  <body bgcolor="#383848" style="color:#f0f0f3">
     <center>
       <h1>Backstab</h1>
       <i>The language for impatient people. "Do it once, do it kinda right"</i><br>
@@ -70,191 +80,202 @@
             <th>Notes</th>
           </tr>
           <tr>
-            <td>0-9</td>
+            <td class="token">0-9<</td>
             <td>Literal numbers</td>
-            <td>123 → 1,2,3</td>
+            <td><span class="code">123</span> → 1,2,3</td>
             <td></td>
           </tr>
           <tr>
-            <td>"</td>
+            <td class="token">"</td>
             <td>Initiate long number mode.<br>Concatenates long numbers</td>
-            <td>"123 → 123<br>1"23 → 1,23<br>"12"34 → 12,34</td>
+            <td><span class="code">"123</span> → 123<br><span class="code">1"23</span> → 1,23<br><span class="code">"12"34</span> → 12,34</td>
             <td>Terminates automatically</td>
           </tr>
           <tr>
-            <td>+-*/%^</td>
+            <td class="token">+-*/%^</td>
             <td>Arithmetic opperators<br>Takes the top two elements of the stack as inputs<br>The result is pushed back to the stack<br>Addition, substraction, multiplication, division, modulo and powers</td>
-            <td>23* → 6<br>52/ → 2.5<br>23+5* → 25</td>
+            <td><span class="code">23*</span> → 6<br><span class="code">52/</span> → 2.5<br><span class="code">23+5*</span> → 25</td>
             <td>Division is floating point</td>
           </tr>
           <tr>
-            <td>_</td>
+            <td class="token">_</td>
             <td>Concatenate the top two numbers on the stack</td>
-            <td>23_ → 23</td>
+            <td><span class="code">23_</span> → 23</td>
             <td></td>
           </tr>
           <tr>
-            <td>$</td>
+            <td class="token">$</td>
             <td>Swap the top two numbers on the stack</td>
-            <td>23$ → 3,2</td>
+            <td><span class="code">23$</span> → 3,2</td>
             <td></td>
           </tr>
           <tr>
-            <td>@</td>
+            <td class="token">@</td>
             <td>Rotate the top three numbers of the stack</td>
-            <td>123@ → 3,2,1</td>
+            <td><span class="code">123@</span> → 3,2,1</td>
             <td></td>
           </tr>
           <tr>
-            <td>:</td>
+            <td class="token">:</td>
             <td>Duplicate the number on the top of the stack</td>
-            <td>2: → 2,2</td>
+            <td><span class="code">2:</span> → 2,2</td>
             <td></td>
           </tr>
           <tr>
-            <td>RL</td>
+            <td class="token">RL</td>
             <td>Right or left shift the stack</td>
-            <td>1234R → 4,1,2,3<br>1234L → 2,3,4,1</td>
+            <td><span class="code">1234R</span> → 4,1,2,3<br><span class="code">1234L</span> → 2,3,4,1</td>
             <td></td>
           </tr>
           <tr>
-            <td>~</td>
+            <td class="token">~</td>
             <td>Remove the number on top of the stack</td>
-            <td>123~ → 1,2</td>
+            <td><span class="code">123~</span> → 1,2</td>
             <td></td>
           </tr>
           <tr>
-            <td>?</td>
+            <td class="token">?</td>
             <td>Shorthand conditional. Pops a value from the stack, and only executes the next statement if it is non-zero</td>
-            <td>1?23 → 2,3<br>0?23 → 3</td>
+            <td><span class="code">1?23</span> → 2,3<br><span class="code">0?23</span> → 3</td>
             <td></td>
           </tr>
           <tr>
-            <td>=><</td>
+            <td class="token">=><</td>
             <td>Logical operators, pops two number of the stack, and pushes either 0 or 1</td>
-            <td>55= → 1<br>45= → 0<br>34< → 1</td>
+            <td><span class="code">55=</span> → 1<br><span class="code">45=</span> → 0<br><span class="code">34<</span> → 1</td>
             <td></td>
           </tr>
           <tr>
-            <td>{}</td>
+            <td class="token">{}</td>
             <td>A function block. Code inside the block is executed when the function is called</td>
             <td></td>
             <td>A function can contain other functions, but they are only accessible from within it</td>
           </tr>
           <tr>
-            <td>\</td>
+            <td class="token">\</td>
             <td>The function caller. Pops a number from the stack, and executes that function</td>
-            <td>{+}220\ → 4<br>7{2*}{-}0\11\ → 13</td>
+            <td><span class="code">{+}220\</span> → 4<br><span class="code">7{2*}{-}0\11\</span> → 13</td>
             <td>The function indexing inside another function is independent
               <br>Functions outside the current function can not be called
             </td>
           </tr>
           <tr>
-            <td>(|)</td>
+            <td class="token">(|)</td>
             <td>if..else statement. The code between ( and | is executed if a number popped from the stack at ( is non-zero, between | and ) otherwise.
               <br>An if statement can be written as just ()
             </td>
-            <td>0(1|2) → 2<br>1(1|2) → 1<br>1(2) → 2</td>
+            <td><span class="code">0(1|2)</span> → 2<br><span class="code">1(1|2)</span> → 1<br><span class="code">1(2)</span> → 2</td>
             <td>Tip: for longer programs, use whitespace and intendation</td>
           </tr>
           <tr>
-            <td>[]</td>
+            <td class="token">[]</td>
             <td>While loop. Each time [ is reached, a number is popped. A non-zero number makes the loop execute anything between [ and ]. Repeat</td>
-            <td>5:[:1-:] → 5,4,3,2,1,0</td>
+            <td><span class="code">5:[:1-:]</span> → 5,4,3,2,1,0</td>
             <td>Be careful! Infinite loops are nasty for your browser<br>If a ] does not find a matchin [, it goes to the start of the current function block (or of the program)</td>
           </tr>
           <tr>
-            <td>sct<br>SCT</td>
+            <td class="token">sct<br>SCT</td>
             <td>Trigonometry. Sine, cosine and tangent. The inverse function if in capital letters</td>
             <td></td>
             <td></td>
           </tr>
           <tr>
-            <td>pe</td>
+            <td class="token">#</td>
+            <td>Pop a number n from the stack, and repeat the next command n times</td>
+            <td><span class="code">12343#+</span> → 10</td>
+            <td>Still experimental</td>
+          </tr>
+          <tr>
+            <td class="token">pe</td>
             <td>Push pi or e to the stack</td>
-            <td>p → 3.14159...<br>e → 2.71828...</td>
+            <td><span class="code">p</span> → 3.14159...<br>e → 2.71828...</td>
             <td></td>
           </tr>
           <tr>
-            <td>ahkmb</td>
+            <td class="token">ahkmb</td>
             <td>Push either ten, hundred, thousand, a million or a billion to the stack</td>
-            <td>5k* → 5000</td>
+            <td><span class="code">5k*</span> → 5000</td>
             <td></td>
           </tr>
           <tr>
-            <td>v</td>
+            <td class="token">v</td>
             <td>Square root</td>
-            <td>"49v → 7</td>
+            <td><span class="code">"49v</span> → 7</td>
             <td></td>
           </tr>
           <tr>
-            <td>f</td>
+            <td class="token">f</td>
             <td>Floor. Round a number down to the nearest integer</td>
-            <td>pf → 3</td>
+            <td><span class="code">pf</span> → 3</td>
             <td></td>
           </tr>
           <tr>
-            <td>i</td>
+            <td class="token">i</td>
             <td>Push the length of the stack to the stack</td>
-            <td>i → 0<br>5i → 51</td>
+            <td><span class="code">i</span> → 0<br><span class="code">5i</span> → 5,1</td>
             <td></td>
           </tr>
           <tr>
-            <td>r</td>
+            <td class="token">r</td>
             <td>Reverse the stack</td>
-            <td>123r → 3,2,1</td>
+            <td><span class="code">123r</span> → 3,2,1</td>
             <td></td>
           </tr>
           <tr>
-            <td>l</td>
+            <td class="token">l</td>
             <td>Logarithm. Takes a number and the base as arguments</td>
-            <td>eel → 1</td>
+            <td><span class="code">eel</span> → 1<br><span class="code">"256"2l</span> → 8</td>
             <td></td>
           </tr>
           <tr>
-            <td>!</td>
+            <td class="token">!</td>
             <td>Factorial</td>
-            <td>6! → 720</td>
+            <td><span class="code">6!</span> → 720</td>
             <td></td>
           </tr>
           <tr>
-            <td>q</td>
+            <td class="token">q</td>
             <td>Sort the stack</td>
-            <td>5496q → 4,5,6,9</td>
+            <td><span class="code">5496q</span> → 4,5,6,9</td>
             <td></td>
           </tr>
           <tr>
-            <td>x</td>
+            <td class="token">x</td>
             <td>Push a random number between 0 and 1 to the stack</td>
             <td></td>
             <td></td>
           </tr>
           <tr>
-            <td>F</td>
+            <td class="token">F</td>
             <td>Factorize the top number of the stack</td>
-            <td>"140F → 2,2,5,7</td>
+            <td><span class="code">"140F</span> → 2,2,5,7</td>
             <td></td>
           </tr>
           <tr>
-            <td>,</td>
+            <td class="token">,</td>
             <td>Split a number into digits</td>
-            <td>"140, → 1,4,0</td>
+            <td><span class="code">"140,</span> → 1,4,0</td>
             <td></td>
           </tr>
           <tr>
-            <td>A</td>
+            <td class="token">A</td>
             <td>Absolute value</td>
-            <td>5-A → 5<br>5A → 5</td>
+            <td><span class="code">5-A</span> → 5<br><span class="code">5A</span> → 5</td>
             <td></td>
           </tr>
           <tr>
-            <td>;</td>
+            <td class="token">;</td>
             <td>Stop execution</td>
             <td></td>
             <td></td>
           </tr>
         </table>
-        <p>Primality checker ::0=$1=+(~0;)2:[:L:@2->(~~1;):L:@%0=(~~0;)1+:] or with the factorization operator Fi1=Ri1-:[R~L1-:]~</p>
+        <h3>Corner cases</h3>
+        <p class="about">Some of the operators can only take integer arguments. In those cases, floating point numbers are floored.
+          <br>
+        </p>
+        <h3>Example programs</h3>
+        <p>Primality checker <span class="code">::0=$1=+(~0;)2:[:L:@2->(~~1;):L:@%0=(~~0;)1+:]</span> or with the factorization operator  <span class="code">Fi1=Ri1-:[R~L1-:]~</span></p>
       </details>
       <br>
       <details>
