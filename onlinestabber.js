@@ -340,13 +340,13 @@ backstab = function(code,input){
 					change(last(1)+last(0),1);
 					stack.pop();
 				};
-			};
+			}
 			else if(string[i] === "*"){
 				for(;repeat--;){
 					change(last(1)*last(0),1);
 					stack.pop();
 				};
-			};
+			}
 			else if(string[i] === "_"){
 				for(;repeat--;){
 					change(Number(last(1)+""+last(0)),1);
