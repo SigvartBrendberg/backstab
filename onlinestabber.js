@@ -1,4 +1,5 @@
 backstab = function(code,input){
+	var output = "";
 	var subStringProcess = function(string){
 		var modified = "";
 		var subStrings = [];
@@ -66,6 +67,7 @@ backstab = function(code,input){
 	};
 	var callStack = [];
 	var longMode = false;
+	var stringMode = true;
 	for(var i=0;true;){
 		if(longMode){
 			if(literal(string[i])){
@@ -89,6 +91,11 @@ backstab = function(code,input){
 			i++;
 			if(i<string.length){
 				stack.push(Number(string[i]));
+			};
+		}
+		else if(string[i] === "'"){
+			for(;string[++i] != "'" && i < string.length;){
+				stack.push(string[i].charCodeAt(0));
 			};
 		}
 		else if(string[i] === "+"){
@@ -278,6 +285,10 @@ backstab = function(code,input){
 				stack.push(Number(tmp[j]));
 			};
 		}
+		else if(string[i] === "."){
+			output += String.fromCharCode(last(0));
+			stack.pop();
+		}
 		else if(string[i] === "A"){
 			change(Math.abs(last(0)),0);
 		}
@@ -352,6 +363,11 @@ backstab = function(code,input){
 					change(Number(last(1)+""+last(0)),1);
 					stack.pop();
 				};
+			}
+			else if(literal(string[i])){
+				for(;repeat--;){
+					stack.push(Number(string[i]));
+				};
 			};
 		}
 		else if(string[i] === "["){
@@ -414,5 +430,5 @@ backstab = function(code,input){
 			string = where.code;
 		};
 	};
-	return stack;
+	return output + stack;
 };
