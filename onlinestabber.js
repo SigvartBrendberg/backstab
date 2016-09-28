@@ -123,7 +123,8 @@ backstab = function(code,input){
 			stack.pop();
 		}
 		else if(string[i] === "l"){
-			change(Math.log(last(0)),0);
+			change(Math.log(last(1))/Math.log(last(0)),1);
+			stack.pop();
 		}
 		else if(string[i] === "_"){
 			change(Number(last(1)+""+last(0)),1);
@@ -282,7 +283,7 @@ backstab = function(code,input){
 		}
 		else if(string[i] === "R"){
 			stack.unshift(last(0));
-			stack.pop();;
+			stack.pop();
 		}
 		else if(string[i] === "L"){
 			stack.push(stack[0]);
