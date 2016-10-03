@@ -1,6 +1,6 @@
 backstab = function(code,input){
 	var output = "";
-	var subStringProcess = function(string){
+	var subStringProcess = function(string){//turn a string containing { and } into a nested object
 		var modified = "";
 		var subStrings = [];
 		for(var i=0;i<string.length;i++){
@@ -29,7 +29,7 @@ backstab = function(code,input){
 			};
 		};
 		for(var i=0;i<subStrings.length;i++){
-			subStrings[i] = subStringProcess(subStrings[i]);
+			subStrings[i] = subStringProcess(subStrings[i]); //repeat recursivlely for all nested blocks
 		};
 		return {
 			code:modified,
@@ -59,16 +59,17 @@ backstab = function(code,input){
 	for(var i=0;i<input.length;i++){
 		stack.push(input[i]);
 	};
+	//a quick way to get and change elements in the stack indexed from the end
 	var last = function(index){
 		return stack[stack.length-index-1];
 	};
 	var change = function(value,index){
 		stack[stack.length-index-1] = value;
 	};
+	//
 	var callStack = [];
 	var longMode = false;
-	var stringMode = true;
-	for(var i=0;true;){
+	for(var i=0;true;){//escaped via breakpoints
 		if(longMode){
 			if(literal(string[i])){
 				if(stack.length != 0){
@@ -86,14 +87,14 @@ backstab = function(code,input){
 		else if(literal(string[i])){
 			stack.push(Number(string[i]));
 		}
-		else if(string[i] === "\""){
+		else if(string[i] === "\""){//long number, auto-concatenate digits
 			longMode = true;
 			i++;
 			if(i<string.length){
 				stack.push(Number(string[i]));
 			};
 		}
-		else if(string[i] === "'"){
+		else if(string[i] === "'"){//"String mode", treat the following characters as ascii values (unicode in this implementation)
 			for(;string[++i] != "'" && i < string.length;){
 				stack.push(string[i].charCodeAt(0));
 			};
@@ -121,7 +122,7 @@ backstab = function(code,input){
 			change(last(1)/last(0),1);
 			stack.pop();
 		}
-		else if(string[i] === "%"){
+		else if(string[i] === "%"){//modulo
 			change(last(1)%last(0),1);
 			stack.pop();
 		}
@@ -130,15 +131,25 @@ backstab = function(code,input){
 			stack.pop();
 		}
 		else if(string[i] === "l"){
-			change(Math.log(last(1))/Math.log(last(0)),1);
+			change(
+				Math.log(last(1))/
+				Math.log(last(0)),
+				1
+			);
 			stack.pop();
 		}
-		else if(string[i] === "_"){
-			change(Number(last(1)+""+last(0)),1);
+		else if(string[i] === "_"){//concatenate
+			change(
+				Number(Math.floor(last(1)) + "" + Math.floor(last(0))),
+				1
+			);//autofloor
 			stack.pop();
 		}
 		else if(string[i] === "i"){
 			stack.push(stack.length);
+		}
+		else if(string[i] === "d"){//flush the stack
+			stack = [];
 		}
 		else if(string[i] === "p"){
 			stack.push(Math.PI);
@@ -167,7 +178,7 @@ backstab = function(code,input){
 		else if(string[i] === "f"){
 			change(Math.floor(last(0)),0);
 		}
-		else if(string[i] === "!"){
+		else if(string[i] === "!"){//factorial
 			change(Math.floor(last(0)),0);//autofloor
 			var produkt = 1;
 			for(var j=2;j<=last(0);j++){
@@ -286,7 +297,12 @@ backstab = function(code,input){
 			};
 		}
 		else if(string[i] === "."){
-			output += String.fromCharCode(last(0));
+			if(last(0) === 10){
+				output += "<br>";
+			}
+			else{
+				output += String.fromCharCode(last(0));
+			};
 			stack.pop();
 		}
 		else if(string[i] === "A"){
@@ -303,7 +319,7 @@ backstab = function(code,input){
 		else if(string[i] === ";"){
 			break;
 		}
-		else if(string[i] === "("){
+		else if(string[i] === "("){//generic if..else statement
 			if(last(0) === 0){
 				var nesting = 1;
 				for(;++i<string.length;){
@@ -337,7 +353,7 @@ backstab = function(code,input){
 				};
 			};
 		}
-		else if(string[i] === "#"){
+		else if(string[i] === "#"){//repeat mode
 			var repeat = Math.floor(last(0));//autofloor
 			stack.pop();
 			if(string[++i] === "+"){
@@ -360,7 +376,27 @@ backstab = function(code,input){
 			}
 			else if(string[i] === "_"){
 				for(;repeat--;){
-					change(Number(last(1)+""+last(0)),1);
+					change(
+						Number(
+							Math.floor(last(1)) + "" + Math.floor(last(0))
+						),1
+					);
+					stack.pop();
+				};
+			}
+			else if(string[i] === "."){
+				for(;repeat--;){
+					if(last(0) === 10){
+						output += "<br>";
+					}
+					else{
+						output += String.fromCharCode(last(0));
+					};
+					stack.pop();
+				};
+			}
+			else if(string[i] === "~"){
+				for(;repeat--;){
 					stack.pop();
 				};
 			}
@@ -370,7 +406,7 @@ backstab = function(code,input){
 				};
 			};
 		}
-		else if(string[i] === "["){
+		else if(string[i] === "["){//a generic loop
 			if(last(0) === 0){
 				var nesting = 1;
 				for(;++i<string.length;){
@@ -402,7 +438,7 @@ backstab = function(code,input){
 			};
 			i--;
 		}
-		else if(string[i] === "\\"){
+		else if(string[i] === "\\"){//call a function
 			callStack.push(
 				{
 					location:i,
@@ -420,14 +456,16 @@ backstab = function(code,input){
 		if(++i >= string.length){
 			if(callStack.length === 0){
 				break;
+			}
+			else{//if escaping from a function call, return to the calling position
+				i = callStack[callStack.length-1].location+1;
+				callStack.pop();
+				var where = structure;
+				for(var j=0;j<callStack.length;j++){
+					where = where.sub[callStack[j].target];
+				};
+				string = where.code;
 			};
-			i = callStack[callStack.length-1].location+1;
-			callStack.pop();
-			var where = structure;
-			for(var j=0;j<callStack.length;j++){
-				where = where.sub[callStack[j].target];
-			};
-			string = where.code;
 		};
 	};
 	return output + stack;

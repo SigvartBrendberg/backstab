@@ -189,7 +189,9 @@
             <td class="token">''</td>
             <td>String mode. The ascii value of all symbols between the ' symbols is pushed to the stack</td>
             <td><span class="code">'ad'</span> → 97,100</td>
-            <td></td>
+            <td>The code is partially compiled before the execution, for instance, the function blocks are in a three structure.
+              <br>Function blocks in between two ' symbols are not pushed to the stack
+            </td>
           </tr>
           <tr>
             <td class="token">.</td>
@@ -226,6 +228,12 @@
             <td>Push the length of the stack to the stack</td>
             <td><span class="code">i</span> → 0<br><span class="code">5i</span> → 5,1</td>
             <td></td>
+          </tr>
+          <tr>
+            <td class="token">d</td>
+            <td>Delete the content of the stack</td>
+            <td><span class="code">12345d</span> → <br><span class="code">123d4</span> → 4</td>
+            <td>Equivalent to <span class="code">i#~</span></td>
           </tr>
           <tr>
             <td class="token">r</td>
